@@ -1,0 +1,17 @@
+numpy==1.17.5
+scipy==1.5.4
+opencv-python==4.4.0.46
+opencv-contrib-python==4.4.0.46
+tensorflow-gpu==2.3.1
+keras_applications==1.0.8
+tensorflow-model-optimization==0.5.0
+matplotlib==3.3.3
+tqdm==4.54.1
+pillow==8.0.1
+Cython==0.29.21
+pycocotools==2.0.2
+sympy==1.7
+imgaug==0.2.9
+imagecorruptions==1.1.2
+bokeh==2.2.3
+tidecv==1.0.1

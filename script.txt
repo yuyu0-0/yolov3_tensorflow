@@ -1,0 +1,52 @@
+
+==============download pre-trained weights======================================================================
+wget -O weights/darknet53.conv.74.weights https://pjreddie.com/media/files/darknet53.conv.74
+wget -O weights/darknet19_448.conv.23.weights https://pjreddie.com/media/files/darknet19_448.conv.23
+wget -O weights/yolov3.weights https://pjreddie.com/media/files/yolov3.weights
+wget -O weights/yolov3-tiny.weights https://pjreddie.com/media/files/yolov3-tiny.weights
+================================================================================================================
+
+
+==============change weights to .h5 file========================================================================
+python tools/model_converter/convert.py cfg/yolov3.cfg weights/yolov3.weights weights/yolov3.h5
+python tools/model_converter/convert.py cfg/yolov3-tiny.cfg weights/yolov3-tiny.weights weights/yolov3-tiny.h5
+python tools/model_converter/convert.py cfg/yolov3-spp.cfg weights/yolov3-spp.weights weights/yolov3-spp.h5
+python tools/model_converter/convert.py cfg/darknet53.cfg weights/darknet53.conv.74.weights weights/darknet53.h5
+
+python tools/model_converter/convert.py cfg/darknet19_448_body.cfg weights/darknet19_448.conv.23.weights weights/darknet19.h5
+python tools/model_converter/convert.py cfg/csdarknet53-omega.cfg weights/csdarknet53-omega_final.weights weights/cspdarknet53.h5
+================================================================================================================
+
+==============voc annotation convert============================================================================
+python tools/dataset_converter/voc_annotation.py --dataset_path=badminton/ --year=2007 --classes_path=configs/classes.txt
+================================================================================================================
+
+==============create trainval.txt===============================================================================
+cp 2007_train.txt trainval.txt
+cat 2007_val.txt >> trainval.txt
+================================================================================================================
+
+==============kmeans.py find anchor box size====================================================================
+python tools/misc/kmeans.py --annotation_file=trainval.txt --cluster_number=9 --anchors_file=configs/yolo3_anchors.txt
+================================================================================================================
+
+==============for training============================================================================================================================================================
+python train.py --model_type=yolo3_darknet --anchors_path=configs/yolo3_anchors.txt --annotation_file=trainval.txt --classes_path=configs/classes.txt --weights_path=xxx.h5
+																																						pre-trained model path				
+======================================================================================================================================================================================
+
+==============for yolo dump model============================================================================================================================================================================
+python yolo.py --model_type=yolo3_darknet --weights_path=logs/ --anchors_path=configs/yolo3_anchors.txt --classes_path=configs/classes.txt --model_image_size=416x416 --dump_model --output_model_file=xxx.h5
+																																															dump model path
+=============================================================================================================================================================================================================
+
+==============for yolo detecting=============================================================================================================================================================================
+python yolo.py --model_type=yolo3_darknet --weights_path=logs/ --anchors_path=configs/yolo3_anchors.txt --classes_path=configs/classes.txt --model_image_size=416x416 --image
+
+python yolo.py --model_type=yolo3_darknet --weights_path=logs/ --anchors_path=configs/yolo3_anchors.txt --classes_path=configs/classes.txt --model_image_size=416x416 --input= video_path
+=============================================================================================================================================================================================================
+
+==============for testing============================================================================================================================================================================================================================
+python eval.py --model_path=save_model/ --anchors_path=configs/yolo3_anchors.txt --classes_path=configs/classes.txt --model_image_size=416x416 --eval_type=VOC --iou_threshold=0.4 --conf_threshold=0.2 --annotation_file=2007_test.txt --save_result
+					eval model path
+===============================================================================================================================================================================================================================================
